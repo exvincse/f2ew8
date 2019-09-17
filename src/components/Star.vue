@@ -10,9 +10,12 @@
               <img src="../assets/img/icon-star-active.svg" alt="">
             </a>
           </div>
-          <i v-if="item.val.type === 'pdf'" class="fas fa-file-pdf fa-5x"></i>
-          <i v-else-if="item.val.type === 'zip' || item.val.type === 'rar'" class="fas fa-file-archive fa-5x"></i>
-          <i v-else class="far fa-folder-open fa-5x"></i>
+          <div class="star-pos">
+            <i v-if="item.val.type === 'pdf'" class="fas fa-file-pdf fa-5x"></i>
+            <i v-else-if="item.val.type === 'zip' || item.val.type === 'rar'" class="fas fa-file-archive fa-5x"></i>
+            <i v-else class="far fa-folder-open fa-5x"></i>
+            <a href="#" class="star-link" @click.prevent="starlink(item)"></a>
+          </div>
         </div>
         <span>{{item.val.name}}</span>
       </div>
@@ -32,28 +35,35 @@ export default {
   },
   methods: {
     stardata() {
-      this.$firebase.database().ref('/file').on('value',(data) => {
+      this.$firebase.database().ref('/star').on('value',(data) => {
         this.totaldata = [];
         if (data.val() === null) return false;
         let key = Object.keys(data.val());
         let val = Object.values(data.val());
         key.forEach((item, index) => {
-          if (val[index].star === true) {
-            this.totaldata.push({
-              key: item,
-              val: val[index],
-            });
-          }
+          this.totaldata.push({
+            key: item,
+            val: val[index],
+          });
         });
         return true;
       });
     },
     removestar(item) {
-      this.$firebase.database().ref(`file/${item.key}`).update({
+      this.$firebase.database().ref(`${item.val.path}`).update({
         star: false,
       });
+      this.$firebase.database().ref(`/star/${item.key}`).remove();
       this.stardata();
     },
+    starlink(item) {
+      // this.$router.push({
+      //   path: '/index',
+      //   query: {
+      //     path: item.val.path,
+      //   }
+      // });
+    }
   },
 }
 </script>

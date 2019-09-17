@@ -2,12 +2,14 @@ import 'bootstrap';
 import loading from 'vue-loading-overlay';
 import firebase from 'firebase/app';
 import '@fortawesome/fontawesome-free/css/all.css';
-
+import 'vue-loading-overlay/dist/vue-loading.css';
 import 'firebase/database';
 import 'firebase/storage';
 
 import Vue from 'vue';
 import App from './App.vue';
+import router from './router';
+import './bus';
 
 Vue.config.productionTip = false;
 
@@ -26,5 +28,6 @@ Vue.prototype.$firebase = firebase;
 Vue.component('Loading', loading);
 
 new Vue({
+  router,
   render: h => h(App),
 }).$mount('#app');

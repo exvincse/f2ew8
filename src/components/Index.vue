@@ -2,20 +2,20 @@
   <div>
     <div class="py-5 px-3 bg-primary" style="position:fixed;width:210px;height:100%;">
         <div class="logo"></div>
-        <label class="btn btn-uploadbg upload text-left px-3 py-2 my-4"
+        <label v-if="flag" class="btn btn-uploadbg upload text-left px-3 py-2 my-4"
           for="file" style="cursor: pointer;">
           <input ref="file" type="file" id="file" style="width:0;height:0;opacity: 0;"
             @change="uploadfile()">
           <img src="../assets/img/file-upload-solid.svg" width="24px" height="24px" alt="">
           <span class="ml-3">上傳檔案</span>
         </label>
-        <button class="btn text-white upload text-left px-3 py-2 mb-3"
-          @click="choose = 'all'">
+
+        <router-link to="/index" class="btn text-white upload text-left px-3 py-2 mb-3">
           <img src="../assets/img/icon-folder-upload.svg" width="24px" height="24px" alt="">
           <span class="ml-3">所有檔案</span>
-        </button>
+        </router-link>
 
-        <label class="btn text-white upload text-left px-3 py-2 mb-3"
+        <label v-if="flag" class="btn text-white upload text-left px-3 py-2 mb-3"
           for="folder" style="cursor: pointer;">
           <input ref="folder" type="file" id="folder" style="width:0;height:0;opacity: 0;"
             @change="uploadfolder()" webkitdirectory>
@@ -23,29 +23,29 @@
           <span class="ml-3">上傳資料夾</span>
         </label>
 
-        <button class="btn text-white upload text-left px-3 py-2 mb-3"
-          @click="choose = 'star'">
+        <router-link to="/index/star" class="btn text-white upload text-left px-3 py-2 mb-3">
           <img src="../assets/img/icon-star.svg" width="24px" height="24px" alt="">
           <span class="ml-3">已標記星號</span>
-        </button>
+        </router-link>
 
-        <button class="btn text-white upload text-left px-3 py-2 mb-4"
-          @click="choose = 'trash'">
+        <router-link to="/index/trash" class="btn text-white upload text-left px-3 py-2 mb-4">
           <img src="../assets/img/icon-trash.svg" width="24px" height="24px" alt="">
           <span class="ml-3">垃圾桶</span>
-        </button>
+        </router-link>
     </div>
 
-    <div v-if="choose === 'all'" class="text-white p-4 right-bg" style="margin-left:210px;min-height:100vh;">
-      <uploadfolder
-        @uploadmsg="uploadmsg"
-        :propsfolder="propsfolder"></uploadfolder>
-      <uploadfile
-        @uploadmsg="uploadmsg"
-        :propsfile="propsfile"></uploadfile>
+    <div class="text-white p-4 right-bg" style="margin-left:210px;min-height:100vh;">
+      <div v-if="flag">
+        <uploadfolder
+          @uploadmsg="uploadmsg"
+          :propsfolder="propsfolder"
+          :buspath="$route.query.path"></uploadfolder>
+        <uploadfile
+          @uploadmsg="uploadmsg"
+          :propsfile="propsfile"></uploadfile>
+      </div>
+      <router-view v-else></router-view>
     </div>
-    <star v-else-if="choose === 'star'" style="margin-left:210px;"></star>
-    <trash v-else-if="choose === 'trash'" style="margin-left:210px;"></trash>
 
     <div v-if="uploadprogress.progressshow">
       <div class="helper-upload"></div>
@@ -72,19 +72,15 @@
 import $ from 'jquery';
 import uploadfile from './Uploadfile.vue';
 import uploadfolder from './Uploadfolder.vue';
-import trash from './Trash.vue';
-import star from './Star.vue';
 
 export default {
   components:{
     uploadfile,
     uploadfolder,
-    trash,
-    star,
   },
   data() {
     return {
-      choose: 'all',
+      flag: true,
       filedata: [],
       uploadprogress: {
         progressshow: false,
@@ -95,6 +91,17 @@ export default {
       propsfolder: [],
       propsfile: [],
     };
+  },
+  watch: {
+    '$route'(to, from) {
+      if (to.path !== '/index') {
+        this.flag = false;
+      } else {
+        this.flag = true;
+      }
+      // if (this.$route.query.path === undefined) return false;
+    },
+    immediate: true,
   },
   methods: {
     uploadfile() {
