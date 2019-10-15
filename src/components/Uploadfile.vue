@@ -103,6 +103,12 @@ export default {
       });
     },
     uploadfile() {
+      let filefilter = this.propsfile.type.split('/')[1];
+      if (filefilter !== 'pdf' && filefilter !== 'zip' && filefilter !== 'rar'){
+        alert('請暫時不要上傳不是PDF,zip,rar格式檔案');
+        $('#file').val('');
+        return false;
+      }
       const firebase = this.$firebase.storage().ref();
       const uploadTask = firebase.child(`file/${this.propsfile.name}`).put(this.propsfile);
       uploadTask.on('state_changed', (snapshot) => {

@@ -572,6 +572,12 @@ export default {
       }
       const firebase = this.$firebase.storage().ref();
       const file = this.$refs.folderfile.files[0];
+      let filefilter = file.type.split('/')[1];
+      if (filefilter !== 'pdf' && filefilter !== 'zip' && filefilter !== 'rar'){
+        alert('請暫時不要上傳不是PDF,zip,rar格式檔案');
+        $('#file').val('');
+        return false;
+      }
       const uploadTask = firebase.child(`file/${file.name}`).put(file);
       uploadTask.on('state_changed', (snapshot) => {
         const start = (snapshot.bytesTransferred / 1000000).toFixed(1);
@@ -649,6 +655,18 @@ export default {
       const folder = Array.prototype.slice.call(this.propsfolder);
       const firebase = this.$firebase.storage().ref();
       const id = Math.floor(new Date()).toString();
+      try {
+         folder.forEach((item) => {
+            let filefilter = item.type.split('/')[1];
+            if (filefilter !== 'pdf' && filefilter !== 'zip' && filefilter !== 'rar'){
+              throw new Error()
+            }
+         })
+      } catch (error) {
+        alert('請暫時不要上傳不是PDF,zip,rar格式檔案');
+        $('#folder').val('');
+        return false;
+      }
       folder.forEach((item) => {
         const ary = [];
         const uploadTask = firebase.child(`folder/${id}/${item.webkitRelativePath}`).put(item);
